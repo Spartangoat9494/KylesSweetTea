@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hacked</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+    color: #00ff00;
+    font-family: monospace, monospace;
+    position: relative;
+  }
+
+  .center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 5rem;
+    font-weight: bold;
+    color: #00ff00;
+    text-shadow:
+      0 0 5px #00ff00,
+      0 0 15px #00ff00,
+      0 0 30px #00ff00;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .number {
+    position: absolute;
+    color: #00ff00;
+    font-size: 14px;
+    user-select: none;
+    pointer-events: none;
+    will-change: transform, opacity;
+    text-shadow:
+      0 0 2px #00ff00;
+    opacity: 0.2;
+    transition: opacity 0.1s linear;
+  }
+</style>
+</head>
+<body>
+
+<div class="center-text">You're hacked</div>
+
+<script>
+  const numberCount = 500;
+  const numbers = [];
+
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function randomFloat(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  for(let i = 0; i < numberCount; i++) {
+    const num = document.createElement('div');
+    num.classList.add('number');
+    num.textContent = Math.floor(Math.random() * 10);
+    document.body.appendChild(num);
+
+    numbers.push({
+      el: num,
+      x: randomInt(0, window.innerWidth),
+      y: randomInt(0, window.innerHeight),
+      vx: randomFloat(-0.4, 0.4),
+      vy: randomFloat(-0.4, 0.4),
+      value: num.textContent,
+      opacity: 0.2,
+      flashTimer: 0
+    });
+
+    num.style.left = numbers[i].x + 'px';
+    num.style.top = numbers[i].y + 'px';
+  }
+
+  function animate() {
+    for(let i = 0; i < numberCount; i++) {
+      const n = numbers[i];
+      n.x += n.vx;
+      n.y += n.vy;
+
+      if(n.x < 0) n.x = window.innerWidth;
+      else if(n.x > window.innerWidth) n.x = 0;
+      if(n.y < 0) n.y = window.innerHeight;
+      else if(n.y > window.innerHeight) n.y = 0;
+
+      // Randomly change digit
+      if(Math.random() < 0.01) {
+        n.value = Math.floor(Math.random() * 10);
+        n.el.textContent = n.value;
+      }
+
+      // Flash effect: change opacity randomly
+      n.flashTimer -= 1;
+      if(n.flashTimer <= 0) {
+        // flash duration between 5 and 20 frames
+        n.flashTimer = randomInt(5, 20);
+        n.opacity = Math.random() * 0.8 + 0.2; // opacity between 0.2 and 1
+        n.el.style.opacity = n.opacity;
+      }
+
+      n.el.style.transform = `translate(${n.x}px, ${n.y}px)`;
+    }
+    requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  window.addEventListener('resize', () => {
+    for(let n of numbers) {
+      n.x = Math.min(n.x, window.innerWidth);
+      n.y = Math.min(n.y, window.innerHeight);
+    }
+  });
+</script>
+
+</body>
+</html>
