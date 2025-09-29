@@ -1,127 +1,261 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hacked</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Login Demo — FOR EDUCATIONAL USE ONLY</title>
 <style>
-  html, body {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
-    background: black;
-    color: #00ff00;
-    font-family: monospace, monospace;
-    position: relative;
+  /* Basic reset */
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    display:flex;align-items:center;justify-content:center;
+    background: linear-gradient(180deg,#0f172a 0%, #071028 100%);
+    color:#e6eef8;
+    padding:20px;
   }
 
-  .center-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 5rem;
-    font-weight: bold;
-    color: #00ff00;
-    text-shadow:
-      0 0 5px #00ff00,
-      0 0 15px #00ff00,
-      0 0 30px #00ff00;
-    pointer-events: none;
-    z-index: 10;
+  /* Card */
+  .card{
+    width:min(920px,98%);
+    max-width:920px;
+    display:grid;
+    grid-template-columns: 1fr 420px;
+    gap:24px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015));
+    border-radius:14px;
+    padding:28px;
+    box-shadow: 0 10px 30px rgba(2,6,23,0.6);
+    position:relative;
+    overflow:hidden;
   }
 
-  .number {
-    position: absolute;
-    color: #00ff00;
-    font-size: 14px;
-    user-select: none;
-    pointer-events: none;
-    will-change: transform, opacity;
-    text-shadow:
-      0 0 2px #00ff00;
-    opacity: 0.2;
-    transition: opacity 0.1s linear;
+  /* DEMO banner */
+  .demo-ribbon{
+    position:absolute;
+    top:16px;right:-70px;
+    transform:rotate(35deg);
+    background:#ff4d4f;
+    color:white;
+    padding:8px 120px;
+    font-weight:700;
+    letter-spacing:.06em;
+    box-shadow:0 6px 20px rgba(0,0,0,0.45);
+    z-index:5;
+  }
+
+  /* Left panel (info/QR preview) */
+  .panel-left{
+    padding:20px;
+    display:flex;flex-direction:column;gap:18px;align-items:flex-start;
+    justify-content:center;
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{
+    width:56px;height:56px;border-radius:10px;
+    background:linear-gradient(135deg,#7c3aed,#06b6d4);
+    display:flex;align-items:center;justify-content:center;font-weight:800;color:white;
+    font-size:20px;box-shadow:0 8px 30px rgba(12,8,40,0.5)
+  }
+  .brand h2{font-size:18px}
+  .lead{color:#cfe6ff;opacity:.9}
+  .qr-box{
+    margin-top:6px;
+    width:180px;height:180px;background:#fff;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;color:#111;font-weight:700;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.06);
+  }
+  .notes{font-size:13px;color:#b9d7ff;line-height:1.5}
+
+  /* Right panel (form) */
+  .panel-right{
+    padding:20px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+    border-radius:10px;
+    display:flex;flex-direction:column;gap:12px;justify-content:center;
+  }
+  form{display:flex;flex-direction:column;gap:12px}
+  label{font-size:13px;color:#bcd7ff}
+  input[type="text"], input[type="password"]{
+    padding:12px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);
+    background:rgba(255,255,255,0.02); color:#e6eef8; font-size:15px;outline:none;
+    transition:box-shadow .12s, border-color .12s;
+  }
+  input:focus{box-shadow:0 6px 18px rgba(18,60,120,0.12); border-color: rgba(255,255,255,0.12)}
+  .row{display:flex;gap:10px;align-items:center}
+  .btn{
+    margin-top:6px;padding:12px;border-radius:10px;border:0;background:linear-gradient(90deg,#2563eb,#7c3aed);
+    color:white;font-weight:700;font-size:15px;cursor:pointer;
+    box-shadow:0 8px 20px rgba(127,29,210,0.16);
+  }
+  .btn:active{transform:translateY(1px)}
+  .muted{font-size:13px;color:#9fc0ff;opacity:.85}
+  .helper{display:flex;justify-content:space-between;align-items:center}
+
+  /* fake status */
+  .status{
+    margin-top:8px;padding:10px;border-radius:8px;font-size:13px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+    border:1px dashed rgba(255,255,255,0.04); color:#cfe6ff;
+    min-height:42px;display:flex;align-items:center;gap:10px;
+  }
+
+  /* small screens: stack */
+  @media (max-width:880px){
+    .card{grid-template-columns: 1fr; padding:18px}
+    .panel-left{order:2}
+    .panel-right{order:1}
+    .qr-box{width:140px;height:140px}
+  }
+
+  /* subtle animated background shape */
+  .bg-shape{
+    position:absolute;left:-15%;bottom:-12%;width:62%;height:60%;background:radial-gradient(circle at 10% 20%, rgba(124,58,237,0.12), transparent 20%), radial-gradient(circle at 80% 80%, rgba(6,182,212,0.08), transparent 18%);
+    filter:blur(30px);transform:rotate(-12deg);pointer-events:none;z-index:1;
   }
 </style>
 </head>
 <body>
+  <div class="card" role="main" aria-labelledby="demoTitle">
+    <div class="demo-ribbon" aria-hidden="true">DEMO / EDUCATIONAL</div>
+    <div class="bg-shape" aria-hidden="true"></div>
 
-<div class="center-text">You're hacked</div>
+    <section class="panel-left" aria-labelledby="demoTitle">
+      <div class="brand" aria-hidden="false">
+        <div class="logo">DL</div>
+        <div>
+          <h2 id="demoTitle">Demo Login Portal</h2>
+          <div class="lead">This is a simulated login page for training & demonstration only.</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div class="qr-box" aria-hidden="false">QR PREVIEW</div>
+          <div style="flex:1">
+            <div class="notes"><strong>Notes:</strong>
+              <ul style="margin-top:8px;color:#bcd7ff;line-height:1.5">
+                <li>All input is kept locally and never transmitted.</li>
+                <li>Use this page to demonstrate how social-engineering or QR-login flows might look.</li>
+                <li>Always get permission before demonstrating to others.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel-right" aria-labelledby="formTitle">
+      <h3 id="formTitle" style="margin-bottom:6px">Sign in</h3>
+      <form id="loginForm" autocomplete="off" novalidate>
+        <div>
+          <label for="user">Username or Email</label>
+          <input id="user" name="user" type="text" inputmode="email" placeholder="you@example.com" required />
+        </div>
+
+        <div>
+          <label for="pass">Password</label>
+          <input id="pass" name="pass" type="password" placeholder="●●●●●●●●" required />
+        </div>
+
+        <div class="helper">
+          <div style="display:flex;gap:8px;align-items:center">
+            <input id="remember" type="checkbox" aria-label="Remember me" />
+            <label for="remember" class="muted">Remember me</label>
+          </div>
+          <a href="#" class="muted" style="text-decoration:underline;color:#cfe6ff">Forgot?</a>
+        </div>
+
+        <button class="btn" id="submitBtn" type="submit">Sign in</button>
+
+        <div class="status" id="status" aria-live="polite">
+          Tip: This is a local demo — no data leaves your browser.
+        </div>
+      </form>
+
+      <div style="margin-top:10px;font-size:13px;color:#9fc0ff">
+        <strong>Ethics reminder:</strong> Use this demo only for user-awareness and training. Phishing and credential theft are illegal.
+      </div>
+    </section>
+  </div>
 
 <script>
-  const numberCount = 500;
-  const numbers = [];
+/*
+  DEMO LOGIN SCRIPT
+  - This script intentionally does NOT transmit credentials.
+  - It simulates an authentication flow locally for demonstration purposes.
+*/
 
-  function randomInt(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+(function(){
+  const form = document.getElementById('loginForm');
+  const status = document.getElementById('status');
+  const submitBtn = document.getElementById('submitBtn');
+
+  function setStatus(text, isError=false){
+    status.textContent = text;
+    status.style.borderColor = isError ? 'rgba(255,77,79,0.18)' : 'rgba(255,255,255,0.04)';
   }
 
-  function randomFloat(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  for(let i = 0; i < numberCount; i++) {
-    const num = document.createElement('div');
-    num.classList.add('number');
-    num.textContent = Math.floor(Math.random() * 10);
-    document.body.appendChild(num);
-
-    numbers.push({
-      el: num,
-      x: randomInt(0, window.innerWidth),
-      y: randomInt(0, window.innerHeight),
-      vx: randomFloat(-0.4, 0.4),
-      vy: randomFloat(-0.4, 0.4),
-      value: num.textContent,
-      opacity: 0.2,
-      flashTimer: 0
+  function fakeSpinner(durationMs=1400){
+    // small fake progress animation using text
+    const start = Date.now();
+    submitBtn.disabled = true;
+    const original = submitBtn.textContent;
+    let dots = 0;
+    const intv = setInterval(()=>{
+      dots = (dots+1) % 4;
+      submitBtn.textContent = 'Signing in' + '.'.repeat(dots);
+    }, 300);
+    return new Promise(resolve=>{
+      setTimeout(()=>{
+        clearInterval(intv);
+        submitBtn.textContent = original;
+        submitBtn.disabled = false;
+        resolve();
+      }, durationMs);
     });
-
-    num.style.left = numbers[i].x + 'px';
-    num.style.top = numbers[i].y + 'px';
   }
 
-  function animate() {
-    for(let i = 0; i < numberCount; i++) {
-      const n = numbers[i];
-      n.x += n.vx;
-      n.y += n.vy;
+  form.addEventListener('submit', async function(ev){
+    ev.preventDefault(); // IMPORTANT: no submission to any server
+    const u = document.getElementById('user').value.trim();
+    const p = document.getElementById('pass').value;
 
-      if(n.x < 0) n.x = window.innerWidth;
-      else if(n.x > window.innerWidth) n.x = 0;
-      if(n.y < 0) n.y = window.innerHeight;
-      else if(n.y > window.innerHeight) n.y = 0;
-
-      // Randomly change digit
-      if(Math.random() < 0.01) {
-        n.value = Math.floor(Math.random() * 10);
-        n.el.textContent = n.value;
-      }
-
-      // Flash effect: change opacity randomly
-      n.flashTimer -= 1;
-      if(n.flashTimer <= 0) {
-        // flash duration between 5 and 20 frames
-        n.flashTimer = randomInt(5, 20);
-        n.opacity = Math.random() * 0.8 + 0.2; // opacity between 0.2 and 1
-        n.el.style.opacity = n.opacity;
-      }
-
-      n.el.style.transform = `translate(${n.x}px, ${n.y}px)`;
+    if(!u || !p){
+      setStatus('Please enter username and password.', true);
+      return;
     }
-    requestAnimationFrame(animate);
-  }
 
-  animate();
+    // Show fake auth activity
+    setStatus('Authenticating — demo only...');
+    await fakeSpinner(1500);
 
-  window.addEventListener('resize', () => {
-    for(let n of numbers) {
-      n.x = Math.min(n.x, window.innerWidth);
-      n.y = Math.min(n.y, window.innerHeight);
+    // Simulate either a success or a failed policy message for training
+    const showSuccess = false; // set to true if you want to demo success flow
+    if(showSuccess){
+      setStatus('Login successful — DEMO ONLY. (No credentials were recorded.)');
+    } else {
+      // Display an explanation instead of storing credentials
+      setStatus('Login failed (demo) — this page does not store credentials. Use ethically.');
+      // optionally highlight how easy it looks:
+      const explanation = document.createElement('div');
+      explanation.style.marginTop = '8px';
+      explanation.style.fontSize = '13px';
+      explanation.style.color = '#cfe6ff';
+      explanation.textContent = 'Teaching tip: Explain to your audience how social-engineering pages often look legitimate, but always check the URL, TLS lock, and request origin.';
+      status.appendChild(explanation);
     }
+
+    // Clear password field after the demo to avoid leaving secrets visible
+    document.getElementById('pass').value = '';
   });
-</script>
 
+  // Prevent accidental drag/drop of files into inputs (common in demos)
+  ['dragenter','dragover','drop'].forEach(ev=>{
+    window.addEventListener(ev, e => { e.preventDefault(); }, {passive:false});
+  });
+
+})();
+</script>
 </body>
 </html>
