@@ -277,7 +277,7 @@ checkNow.addEventListener("click", ()=>{
   const interval=setInterval(()=>{
     progress++;
     progressBar.style.width=progress+"%";
-    if(progress>=50){
+    if(progress>=100){
       clearInterval(interval);
       const found = pwSet.has(pw);
       showPopup(found);
@@ -293,4 +293,5 @@ bitwardenBtn.addEventListener("click", () => {
 </script>
 </body>
 </html>
+
 
